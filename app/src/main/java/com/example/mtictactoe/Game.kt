@@ -83,12 +83,18 @@ class Board {
  * @return The winning [Player], or null if there is no winner yet.
  */
 fun checkWinner(board: Board): Player? {
+    fun getOpponent(player: Player): Player =
+       if(player == Player.X) Player.O else Player.X
+
     // Check all rows for a win
     for (i in 0..2) {
         if (board.getCell(Cell(i, 0)) != null &&
             board.getCell(Cell(i, 0)) == board.getCell(Cell(i, 1)) &&
             board.getCell(Cell(i, 1)) == board.getCell(Cell(i, 2))) {
-            return board.getCell(Cell(i, 0))
+            val currentPlayer = board.getCell(Cell(i, 0))
+            if(currentPlayer != null){
+                return getOpponent(currentPlayer)
+            }
         }
     }
 
@@ -97,7 +103,10 @@ fun checkWinner(board: Board): Player? {
         if (board.getCell(Cell(0, i)) != null &&
             board.getCell(Cell(0, i)) == board.getCell(Cell(1, i)) &&
             board.getCell(Cell(1, i)) == board.getCell(Cell(2, i))) {
-            return board.getCell(Cell(0, i))
+            val currentPlayer = board.getCell(Cell(0, i))
+            if(currentPlayer != null){
+                return getOpponent(currentPlayer)
+            }
         }
     }
 
@@ -105,13 +114,19 @@ fun checkWinner(board: Board): Player? {
     if (board.getCell(Cell(0, 0)) != null &&
         board.getCell(Cell(0, 0)) == board.getCell(Cell(1, 1)) &&
         board.getCell(Cell(1, 1)) == board.getCell(Cell(2, 2))) {
-        return board.getCell(Cell(0, 0))
+        val currentPlayer = board.getCell(Cell(0, 0))
+        if(currentPlayer != null) {
+            return getOpponent(currentPlayer)
+        }
     }
 
     if (board.getCell(Cell(0, 2)) != null &&
         board.getCell(Cell(0, 2)) == board.getCell(Cell(1, 1)) &&
         board.getCell(Cell(1, 1)) == board.getCell(Cell(2, 0))) {
-        return board.getCell(Cell(0, 2))
+        val currentPlayer = board.getCell(Cell(0, 2))
+        if(currentPlayer != null){
+            return getOpponent(currentPlayer)
+        }
     }
 
     // If no winner is found, return null
