@@ -29,13 +29,14 @@ fun GameScreen(difficulty: String?) {
     // State for the current game, including the board and current player.
     // `remember` makes sure the state is kept across recompositions.
     var game by remember { mutableStateOf(Game()) }
-    Text(text = "Difficulty Level: $difficulty")
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(text = "Difficulty Level: $difficulty")
         // Check for a winner or a draw to display the status.
         val winner = checkWinner(game.board)
         val statusText = when {
