@@ -29,19 +29,21 @@ fun GameScreen(difficulty: String?) {
     // State for the current game, including the board and current player.
     // `remember` makes sure the state is kept across recompositions.
     var game by remember { mutableStateOf(Game()) }
-
+    var isAiThinking by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Difficulty Level: $difficulty")
+        Text(text = "Difficulty Level: ${difficulty ?: "Easy"}")
+
         // Check for a winner or a draw to display the status.
         val winner = checkWinner(game.board)
         val statusText = when {
             winner != null -> "Winner: $winner"
             game.board.isFull() -> "Draw"
+            isAiThinking -> "AI is thinking..."
             else -> "Player: ${game.currentPlayer}"
         }
 
@@ -52,7 +54,11 @@ fun GameScreen(difficulty: String?) {
         BoardView(game.board) { cell ->
             // This block is executed when a cell is clicked.
             // It only allows a move if the game is ongoing and the cell is empty.
-            if (winner == null && game.board.getCell(cell) == null && game.currentPlayer == Player.X) {
+            if (winner == null &&
+                game.board.getCell(cell) == null &&
+                game.currentPlayer == Player.X &&
+                !isAiThinking) {
+
                 // Player's move
                 val newPlayerBoard = game.board.copy().apply { setCell(cell, Player.X) }
                 var updatedGame = game.copy(board = newPlayerBoard, currentPlayer = Player.O)
@@ -61,10 +67,21 @@ fun GameScreen(difficulty: String?) {
                 // AI's turn, if the game is not over.
                 val newWinner = checkWinner(updatedGame.board)
                 if (newWinner == null && !updatedGame.board.isFull()) {
-                    val aiMove = getEasyMove(updatedGame.board) // Get the AI's move.
+                    isAiThinking = true
+
+                    // Get AI move based on difficulty level
+                    val aiMove = when (difficulty?.uppercase()) {
+                        "EASY" -> getEasyMove(updatedGame.board)
+                        "MEDIUM" -> getMediumMove(updatedGame.board)
+                        "HARD" -> getBestMove(updatedGame.board)
+                        else -> getEasyMove(updatedGame.board) // Default to Easy
+                    }
+
                     val newAiBoard = updatedGame.board.copy().apply { setCell(aiMove, Player.O) }
                     updatedGame = updatedGame.copy(board = newAiBoard, currentPlayer = Player.X)
                     game = updatedGame // Update state again for the AI's move.
+
+                    isAiThinking = false
                 }
             }
         }
@@ -125,24 +142,24 @@ fun BoardView(board: Board, onCellClick: (Cell) -> Unit) {
                             (i + 0.5f) * cellSize
                         )
                         if (player == Player.X) {
-                            // Draw 'X'
+                            // Draw 'X' in Red
                             val halfCell = cellSize / 4
                             drawLine(
-                                color = Color.Black,
+                                color = Color.Red,
                                 start = Offset(center.x - halfCell, center.y - halfCell),
                                 end = Offset(center.x + halfCell, center.y + halfCell),
                                 strokeWidth = 8f
                             )
                             drawLine(
-                                color = Color.Black,
+                                color = Color.Red,
                                 start = Offset(center.x - halfCell, center.y + halfCell),
                                 end = Offset(center.x + halfCell, center.y - halfCell),
                                 strokeWidth = 8f
                             )
                         } else {
-                            // Draw 'O'
+                            // Draw 'O' in Blue
                             drawCircle(
-                                color = Color.Black,
+                                color = Color.Blue,
                                 radius = cellSize / 4,
                                 center = center,
                                 style = Stroke(width = 8f)
