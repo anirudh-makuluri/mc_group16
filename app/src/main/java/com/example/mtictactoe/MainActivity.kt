@@ -32,6 +32,9 @@ class MainActivity : ComponentActivity() {
                             val difficulty = it.arguments?.getString("difficulty")
                             GameScreen(difficulty)
                         }
+                        composable(Routes.bluetoothScreen){
+                            BluetoothScreen(navController)
+                        }
 
                     }
                     )

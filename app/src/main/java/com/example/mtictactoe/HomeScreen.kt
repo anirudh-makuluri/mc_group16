@@ -42,7 +42,7 @@ fun HomeScreen(navController: NavController) {
             Text("Multiplayer (same device)")
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { navController.navigate("") }) {
+        Button(onClick = { navController.navigate(Routes.bluetoothScreen) }) {
             Text("Multiplayer (with bluetooth)")
         }
     }
